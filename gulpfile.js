@@ -26,7 +26,7 @@ gulp.task('webpack:dev', ['html:dev', 'css:dev', 'img:dev'], () => {
     .pipe(gulp.dest('.build'));
 });
 
-gul.task('html:dev', () => {
+gulp.task('html:dev', () => {
   return gulp.src('app/**/*.html')
     .pipe(gulp.dest('./build'));
 });
@@ -69,12 +69,12 @@ gulp.task('webpack:test', () => {
 });
 
 gulp.task('test:mocha', () => {
-  return(gulp.src(serverTestFiles))
+  return gulp.src(serverTestFiles)
     .pipe(mocha());
 });
 
 gulp.task('test:karma', ['webpack:test'], (done) => {
-  new KarmaSever({
+  new KarmaServer({
     configFile: __dirname + '/karma.conf.js',
     singleRun: true
   }, done).start();
