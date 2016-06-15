@@ -1,0 +1,33 @@
+{
+  "name": "ccbrecipe",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "create-db-dir": "node lib/mkdir_db.js",
+    "install": "npm run create-db-dir",
+    "test": "./node_modules/mocha/bin/mocha",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bharding2/ccbrecipe.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bharding2/ccbrecipe/issues"
+  },
+  "homepage": "https://github.com/bharding2/ccbrecipe#readme",
+  "dependencies": {
+    "bcrypt": "^0.8.7",
+    "body-parser": "^1.15.1",
+    "express": "^4.13.4",
+    "jsonwebtoken": "^7.0.1",
+    "mongoose": "^4.5.0"
+  }
+}
