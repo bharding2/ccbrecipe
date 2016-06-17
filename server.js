@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5555;
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/ccbrecipe_DB');
 
 // app.use('/api', authRouter);
-// app.use('/api/', recipeRouter);
+// app.use('/api', recipeRouter);
 
 app.use(express.static(__dirname + '/build'));
 
