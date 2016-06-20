@@ -6,12 +6,12 @@ const mongoose = require('mongoose');
 const app = express();
 const PORT = process.env.PORT || 5555;
 
-// const authRouter = require(__dirname + '/routes/auth_router');
+const authRouter = require(__dirname + '/routes/auth_router');
 // const recipeRouter = require(__dirname + '/routes/recipe_router');
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/ccbrecipe_DB');
 
-// app.use('/api', authRouter);
+app.use('/api', authRouter);
 // app.use('/api', recipeRouter);
 
 app.use(express.static(__dirname + '/build'));
