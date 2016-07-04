@@ -7,9 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "create-db-dir": "node lib/mkdir_db.js",
-    "install": "npm run create-db-dir",
-    "test": "./node_modules/mocha/bin/mocha",
+    "install": "node lib/mkdir_db.js",
+    "test": "gulp test",
     "start": "node server.js"
   },
   "repository": {
@@ -24,6 +23,7 @@
   },
   "homepage": "https://github.com/bharding2/ccbrecipe#readme",
   "dependencies": {
+    "authenticat": "^1.0.2",
     "bcrypt": "^0.8.7",
     "body-parser": "^1.15.1",
     "express": "^4.13.4",
