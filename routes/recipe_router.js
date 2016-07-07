@@ -19,7 +19,7 @@ module.exports = function(connection, authenticat) {
   recipeRouter.put('/recipes/:id', authenticat.tokenAuth, bodyParser, (req, res) => {
     var recipeData = req.body;
     delete recipeData._id;
-    Recipe.update({ _id: req.params.id, creatorId: req.user._id }, recipeData, (err, data) => {
+    Recipe.update({ _id: req.params.id }, recipeData, (err, data) => {
       if (!data.nModified) return res.status(500).json({ msg: 'no recipe found' });
       if (err) return handleErr(err, res);
       res.status(200).json({ msg: 'recipe updated' });
@@ -27,7 +27,7 @@ module.exports = function(connection, authenticat) {
   });
 
   recipeRouter.delete('/recipes/:id', authenticat.tokenAuth, (req, res) => {
-    Recipe.findOneAndRemove({ _id: req.params.id, creatorId: req.user._id }, (err) => {
+    Recipe.findOneAndRemove({ _id: req.params.id }, (err) => {
       if (err) return handleErr(err, res);
       res.status(200).json({ msg: 'recipe deleted' });
     });
