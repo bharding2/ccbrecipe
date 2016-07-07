@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
 
-var recipeSchema = new mongoose.Schema({
-  name: String,
-  creatorId: String
-});
+module.exports = function(connection) {
+  var recipeSchema = new mongoose.Schema({
+    name: String,
+    creatorId: String
+  });
 
-module.exports = mongoose.model('Recipe', recipeSchema);
+  return connection.model('Recipe', recipeSchema);
+};
