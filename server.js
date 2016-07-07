@@ -14,12 +14,8 @@ const connection = mongoose.createConnection(process.env.MONGODB_URI ||
   'mongodb://localhost/ccbrecipe_DB');
 const authenticat = new Authenticat(connection);
 
-var recipeSchema = new mongoose.Schema({
-  name: String,
-  creatorId: String
-});
+const Recipe = require(__dirname + '/models/recipe');
 
-var Recipe = connection.model('Recipe', recipeSchema);
 var recipeRouter = Router();
 
 app.use('/api', authenticat.router);
