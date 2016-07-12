@@ -33,5 +33,26 @@ module.exports = function(connection, authenticat) {
     });
   });
 
+  recipeRouter.get('/recipes/all', authenticat.tokenAuth, (req, res) => {
+    Recipe.find(null, (err, data) => {
+      if (err) return handleErr(err, res);
+      res.status(200).json(data);
+    });
+  });
+
+  recipeRouter.get('/recipes/mine', authenticat.tokenAuth, (req, res) => {
+    Recipe.find({ creatorId: req.user._id }, (err, data) => {
+      if (err) return handleErr(err, res);
+      res.status(200).json(data);
+    });
+  });
+
+  recipeRouter.get('/recipes/:id', authenticat.tokenAuth, (req, res) => {
+    Recipe.findOne({ _id: req.params.id }, (err, data) => {
+      if (err) return handleErr(err, res);
+      res.status(200).json(data);
+    });
+  });
+
   return recipeRouter;
 };
