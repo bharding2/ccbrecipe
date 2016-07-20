@@ -26,10 +26,18 @@ module.exports = function(connection, authenticat) {
     });
   });
 
-  recipeRouter.delete('/recipes/:id', authenticat.tokenAuth, (req, res) => {
-    Recipe.findOneAndRemove({ _id: req.params.id }, (err) => {
+  recipeRouter.delete('/recipes/:id', authenticat.tokenAuth, authenticat.roleAuth('baker'),
+  (req, res) => {
+    if (req.user.admin) {
+      return Recipe.findOneAndRemove({ _id: req.params.id }, (err) => {
+        if (err) return handleErr(err, res);
+        res.status(200).json({ msg: 'recipe deleted by admin' });
+      });
+    }
+
+    Recipe.findOneAndRemove({ _id: req.params.id, creatorId: req.user._id }, (err) => {
       if (err) return handleErr(err, res);
-      res.status(200).json({ msg: 'recipe deleted' });
+      res.status(200).json({ msg: 'recipe deleted by creator' });
     });
   });
 
@@ -40,7 +48,8 @@ module.exports = function(connection, authenticat) {
     });
   });
 
-  recipeRouter.get('/recipes/mine', authenticat.tokenAuth, (req, res) => {
+  recipeRouter.get('/recipes/mine', authenticat.tokenAuth, authenticat.roleAuth('baker'),
+  (req, res) => {
     Recipe.find({ creatorId: req.user._id }, (err, data) => {
       if (err) return handleErr(err, res);
       res.status(200).json(data);
