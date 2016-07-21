@@ -6,7 +6,8 @@ module.exports = function(connection, authenticat) {
   const Recipe = require(__dirname + '/../models/recipe')(connection);
   var recipeRouter = Router();
 
-  recipeRouter.post('/recipes', authenticat.tokenAuth, bodyParser, (req, res) => {
+  recipeRouter.post('/recipes', authenticat.tokenAuth, authenticat.roleAuth('baker'),
+  bodyParser, (req, res) => {
     var newRecipe = new Recipe(req.body);
     newRecipe.creatorId = req.user._id;
 
@@ -29,7 +30,7 @@ module.exports = function(connection, authenticat) {
       });
     }
 
-    Recipe.update({ _id: req.params.id }, recipeData, (err, data) => {
+    Recipe.update({ _id: req.params.id, creatorId: req.user._id }, recipeData, (err, data) => {
       if (!data.nModified) return res.status(500).json({ msg: 'no recipe found' });
       if (err) return handleErr(err, res);
       res.status(200).json({ msg: 'recipe updated by creator' });
