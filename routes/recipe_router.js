@@ -16,13 +16,23 @@ module.exports = function(connection, authenticat) {
     });
   });
 
-  recipeRouter.put('/recipes/:id', authenticat.tokenAuth, bodyParser, (req, res) => {
+  recipeRouter.put('/recipes/:id', authenticat.tokenAuth, authenticat.roleAuth('baker'),
+  bodyParser, (req, res) => {
     var recipeData = req.body;
     delete recipeData._id;
+
+    if (req.user.admin) {
+      return Recipe.update({ _id: req.params.id }, recipeData, (err, data) => {
+        if (!data.nModified) return res.status(500).json({ msg: 'no recipe found' });
+        if (err) return handleErr(err, res);
+        res.status(200).json({ msg: 'recipe updated by admin' });
+      });
+    }
+
     Recipe.update({ _id: req.params.id }, recipeData, (err, data) => {
       if (!data.nModified) return res.status(500).json({ msg: 'no recipe found' });
       if (err) return handleErr(err, res);
-      res.status(200).json({ msg: 'recipe updated' });
+      res.status(200).json({ msg: 'recipe updated by creator' });
     });
   });
 
