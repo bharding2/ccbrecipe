@@ -59,6 +59,13 @@ module.exports = function(connection, authenticat) {
     });
   });
 
+  recipeRouter.get('/recipes/current', authenticat.tokenAuth, (req, res) => {
+    Recipe.find({ current: true }, (err, data) => {
+      if (err) return handleErr(err, res);
+      res.status(200).json(data);
+    });
+  });
+
   recipeRouter.get('/recipes/mine', authenticat.tokenAuth, authenticat.roleAuth('baker'),
   (req, res) => {
     Recipe.find({ creatorId: req.user._id }, (err, data) => {
