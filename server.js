@@ -12,9 +12,11 @@ const connection = mongoose.createConnection(process.env.MONGODB_URI ||
 const authenticat = new Authenticat(connection);
 
 const recipeRouter = require(__dirname + '/routes/recipe_router')(connection, authenticat);
+const userRouter = require(__dirname + '/routes/user_router')(connection, authenticat);
 
 app.use('/api', authenticat.router);
 app.use('/api', recipeRouter);
+app.use('/api', userRouter);
 
 app.use(express.static(__dirname + '/build'));
 
