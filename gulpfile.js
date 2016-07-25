@@ -7,10 +7,10 @@ const eslint = require('gulp-eslint');
 const mocha = require('gulp-mocha');
 const KarmaServer = require('karma').Server;
 
-const apiFiles = [];
+const apiFiles = ['./*.js', './lib/*.js', './models/*.js', './routes/*.js'];
 const appFiles = [];
-const serverTestFiles = [];
-const clientTestFiles = [];
+const serverTestFiles = ['./test/server/*test.js'];
+const clientTestFiles = ['./test/client/*test.js'];
 
 gulp.task('webpack:dev', ['html:dev', 'css:dev', 'img:dev'], () => {
   return gulp.src('app/js/entry.js')
