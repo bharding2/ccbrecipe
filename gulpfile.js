@@ -8,7 +8,7 @@ const mocha = require('gulp-mocha');
 const KarmaServer = require('karma').Server;
 
 const apiFiles = ['./*.js', './lib/*.js', './models/*.js', './routes/*.js'];
-const appFiles = [];
+const appFiles = ['./app/**/*.js'];
 const serverTestFiles = ['./test/server/*test.js'];
 const clientTestFiles = ['./test/client/*test.js'];
 
