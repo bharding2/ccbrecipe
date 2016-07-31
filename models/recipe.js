@@ -5,7 +5,9 @@ module.exports = function(connection) {
     name: String,
     creatorId: String,
     currentMenu: Boolean,
-    ingredients: []
+    category: String,
+    ingredients: [],
+    steps: []
   });
 
   return connection.model('Recipe', recipeSchema);
