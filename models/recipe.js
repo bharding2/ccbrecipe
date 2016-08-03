@@ -7,7 +7,8 @@ module.exports = function(connection) {
     currentMenu: Boolean,
     category: String,
     ingredients: [],
-    steps: []
+    steps: [],
+    totalYield: String
   });
 
   return connection.model('Recipe', recipeSchema);
