@@ -26,7 +26,7 @@ module.exports = function(connection, authenticat) {
       return Recipe.update({ _id: req.params.id }, recipeData, (err, data) => {
         if (!data.nModified) return res.status(500).json({ msg: 'no recipe found' });
         if (err) return handleErr(err, res);
-        res.status(200).json({ msg: 'recipe updated by admin' });
+        return res.status(200).json({ msg: 'recipe updated by admin' });
       });
     }
 
@@ -42,7 +42,7 @@ module.exports = function(connection, authenticat) {
     if (req.user.admin) {
       return Recipe.findOneAndRemove({ _id: req.params.id }, (err) => {
         if (err) return handleErr(err, res);
-        res.status(200).json({ msg: 'recipe deleted by admin' });
+        return res.status(200).json({ msg: 'recipe deleted by admin' });
       });
     }
 
