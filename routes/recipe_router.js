@@ -12,7 +12,7 @@ module.exports = function(connection, authenticat) {
     newRecipe.creatorId = req.user._id;
 
     newRecipe.save((err, data) => {
-      if (err) return handleErr(err, res);
+      if (err) return handleErr(err, res, 401, 'error saving recipe');
       res.status(200).json(data);
     });
   });
@@ -24,15 +24,15 @@ module.exports = function(connection, authenticat) {
 
     if (req.user.admin) {
       return Recipe.update({ _id: req.params.id }, recipeData, (err, data) => {
-        if (!data.nModified) return res.status(500).json({ msg: 'no recipe found' });
-        if (err) return handleErr(err, res);
+        if (!data.nModified) return handleErr(null, res, 403, 'no recipe found');
+        if (err) return handleErr(err, res, 401, 'error updating recipe');
         return res.status(200).json({ msg: 'recipe updated by admin' });
       });
     }
 
     Recipe.update({ _id: req.params.id, creatorId: req.user._id }, recipeData, (err, data) => {
-      if (!data.nModified) return res.status(500).json({ msg: 'no recipe found' });
-      if (err) return handleErr(err, res);
+      if (!data.nModified) return handleErr(null, res, 403, 'no recipe found');
+      if (err) return handleErr(err, res, 401, 'error updating recipe');
       res.status(200).json({ msg: 'recipe updated by creator' });
     });
   });
@@ -41,27 +41,27 @@ module.exports = function(connection, authenticat) {
   (req, res) => {
     if (req.user.admin) {
       return Recipe.findOneAndRemove({ _id: req.params.id }, (err) => {
-        if (err) return handleErr(err, res);
+        if (err) return handleErr(err, res, 401, 'error deleting recipe');
         return res.status(200).json({ msg: 'recipe deleted by admin' });
       });
     }
 
     Recipe.findOneAndRemove({ _id: req.params.id, creatorId: req.user._id }, (err) => {
-      if (err) return handleErr(err, res);
+      if (err) return handleErr(err, res, 401, 'error deleting recipe');
       res.status(200).json({ msg: 'recipe deleted by creator' });
     });
   });
 
   recipeRouter.get('/recipes/all', authenticat.tokenAuth, (req, res) => {
     Recipe.find(null, (err, data) => {
-      if (err) return handleErr(err, res);
+      if (err) return handleErr(err, res, 403, 'error accessing recipes');
       res.status(200).json(data);
     });
   });
 
   recipeRouter.get('/recipes/current', authenticat.tokenAuth, (req, res) => {
     Recipe.find({ current: true }, (err, data) => {
-      if (err) return handleErr(err, res);
+      if (err) return handleErr(err, res, 403, 'error accessing recipes');
       res.status(200).json(data);
     });
   });
@@ -69,14 +69,14 @@ module.exports = function(connection, authenticat) {
   recipeRouter.get('/recipes/mine', authenticat.tokenAuth, authenticat.roleAuth('baker'),
   (req, res) => {
     Recipe.find({ creatorId: req.user._id }, (err, data) => {
-      if (err) return handleErr(err, res);
+      if (err) return handleErr(err, res, 403, 'error accessing recipes');
       res.status(200).json(data);
     });
   });
 
   recipeRouter.get('/recipes/:id', authenticat.tokenAuth, (req, res) => {
     Recipe.findOne({ _id: req.params.id }, (err, data) => {
-      if (err) return handleErr(err, res);
+      if (err) return handleErr(err, res, 403, 'error accessing recipe');
       res.status(200).json(data);
     });
   });
