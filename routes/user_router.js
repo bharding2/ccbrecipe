@@ -25,5 +25,16 @@ module.exports = function(connection, authenticat) {
     return handleErr(null, res, 401, 'unauthorized user update');
   });
 
+  userRouter.delete('/users/:id', authenticat.tokenAuth, (req, res) => {
+    if (req.user.admin) {
+      return User.findOneAndRemove({ _id: req.params.id }, (err) => {
+        if (err) return handleErr(err, res, 401, 'error deleting user');
+        return res.status(200).json({ msg: 'user deleted by admin' });
+      });
+    }
+
+    return handleErr(null, res, 401, 'unauthorized user update');
+  });
+
   return userRouter;
 };
