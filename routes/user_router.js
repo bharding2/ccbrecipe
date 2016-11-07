@@ -36,5 +36,26 @@ module.exports = function(connection, authenticat) {
     return handleErr(null, res, 401, 'unauthorized user update');
   });
 
+  userRouter.get('/users/all', authenticat.tokenAuth, (req, res) => {
+    User.find(null, (err, data) => {
+      if (err) return handleErr(err, res, 403, 'error accessing users');
+      res.status(200).json(data);
+    });
+  });
+
+  userRouter.get('/users/:id', authenticat.tokenAuth, (req, res) => {
+    User.findOne({ _id: req.params.id }, (err, data) => {
+      if (err) return handleErr(err, res, 403, 'error accessing user');
+      res.status(200).json(data);
+    });
+  });
+
+  userRouter.get('/users/role/:role', authenticat.tokenAuth, (req, res) => {
+    User.find({ roles: req.params.role }, (err, data) => {
+      if (err) return handleErr(err, res, 403, 'error accessing users');
+      res.status(200).json(data);
+    });
+  });
+
   return userRouter;
 };
