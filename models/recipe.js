@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 module.exports = function(connection) {
   var recipeSchema = new mongoose.Schema({
-    name: String,
+    name: { type: String, required: true },
     creatorId: String,
     currentMenu: Boolean,
     category: String,

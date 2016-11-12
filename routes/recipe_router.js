@@ -6,7 +6,7 @@ module.exports = function(connection, authenticat) {
   const Recipe = require(__dirname + '/../models/recipe')(connection);
   var recipeRouter = Router();
 
-  recipeRouter.post('/recipes', authenticat.tokenAuth, authenticat.roleAuth('baker'),
+  recipeRouter.post('/recipes', authenticat.tokenAuth,
   bodyParser, (req, res) => {
     var newRecipe = new Recipe(req.body);
     newRecipe.creatorId = req.user._id;
@@ -17,7 +17,7 @@ module.exports = function(connection, authenticat) {
     });
   });
 
-  recipeRouter.put('/recipes/:id', authenticat.tokenAuth, authenticat.roleAuth('baker'),
+  recipeRouter.put('/recipes/:id', authenticat.tokenAuth,
   bodyParser, (req, res) => {
     var recipeData = req.body;
     delete recipeData._id;
@@ -37,7 +37,7 @@ module.exports = function(connection, authenticat) {
     });
   });
 
-  recipeRouter.delete('/recipes/:id', authenticat.tokenAuth, authenticat.roleAuth('baker'),
+  recipeRouter.delete('/recipes/:id', authenticat.tokenAuth,
   (req, res) => {
     if (req.user.admin) {
       return Recipe.findOneAndRemove({ _id: req.params.id }, (err) => {
@@ -66,7 +66,7 @@ module.exports = function(connection, authenticat) {
     });
   });
 
-  recipeRouter.get('/recipes/mine', authenticat.tokenAuth, authenticat.roleAuth('baker'),
+  recipeRouter.get('/recipes/mine', authenticat.tokenAuth,
   (req, res) => {
     Recipe.find({ creatorId: req.user._id }, (err, data) => {
       if (err) return handleErr(err, res, 403, 'error accessing recipes');
