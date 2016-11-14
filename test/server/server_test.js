@@ -58,7 +58,7 @@ describe('ccbrecipe server', () => {
           });
       });
 
-      it('should error without authorized user', (done) => {
+      it('should not post without authorized user', (done) => {
         request('localhost:' + port)
           .post('/api/recipes')
           .set('token', fakeToken)
@@ -71,7 +71,7 @@ describe('ccbrecipe server', () => {
           });
       });
 
-      it('should error without valid data', (done) => {
+      it('should not post without valid data', (done) => {
         request('localhost:' + port)
           .post('/api/recipes')
           .set('token', userToken)
@@ -87,7 +87,7 @@ describe('ccbrecipe server', () => {
 
     describe('the GET method', () => {
       before((done) => {
-        var newRecipe = new Recipe({ name: 'vacuum noises' });
+        var newRecipe = new Recipe({ name: 'vacuum noises', current: true });
         newRecipe.save((err) => {
           if (err) console.log(err);
           done();
@@ -107,9 +107,34 @@ describe('ccbrecipe server', () => {
           });
       });
 
-      it('should error without authorized user', (done) => {
+      it('should not get all without authorized user', (done) => {
         request('localhost:' + port)
           .get('/api/recipes/all')
+          .set('token', fakeToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('Invalid Authentication');
+            done();
+          });
+      });
+
+      it('should get current recipes', (done) => {
+        request('localhost:' + port)
+          .get('/api/recipes/current')
+          .set('token', userToken)
+          .end((err, res) => {
+            expect(err).to.eql(null);
+            expect(res.status).to.eql(200);
+            expect(Array.isArray(res.body)).to.eql(true);
+            expect(res.body[0].current).to.eql(true);
+            done();
+          });
+      });
+
+      it('should not get current without authorized user', (done) => {
+        request('localhost:' + port)
+          .get('/api/recipes/current')
           .set('token', fakeToken)
           .end((err, res) => {
             if (err) console.log(err.message);

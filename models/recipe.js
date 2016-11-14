@@ -4,7 +4,7 @@ module.exports = function(connection) {
   var recipeSchema = new mongoose.Schema({
     name: { type: String, required: true },
     creatorId: String,
-    currentMenu: Boolean,
+    current: Boolean,
     category: String,
     ingredients: [],
     steps: [],
