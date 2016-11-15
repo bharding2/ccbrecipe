@@ -7,7 +7,7 @@ module.exports = function(connection, authenticat) {
   var userRouter = Router();
 
   userRouter.get('/profile', authenticat.tokenAuth, (req, res) => {
-    res.status(200).json({ username: req.user.username });
+    res.status(200).json({ username: req.user.username, id: req.user._id });
   });
 
   userRouter.put('/users/:id', authenticat.tokenAuth, bodyParser, (req, res) => {
