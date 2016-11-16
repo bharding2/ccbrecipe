@@ -77,6 +77,7 @@ module.exports = function(connection, authenticat) {
   recipeRouter.get('/recipes/:id', authenticat.tokenAuth, (req, res) => {
     Recipe.findOne({ _id: req.params.id }, (err, data) => {
       if (err) return handleErr(err, res, 403, 'error accessing recipe');
+      if (!data) return handleErr(err, res, 404, 'recipe not found');
       res.status(200).json(data);
     });
   });
