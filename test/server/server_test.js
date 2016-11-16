@@ -174,7 +174,7 @@ describe('ccbrecipe server', () => {
           });
       });
 
-      it('should not current user without authorized user', (done) => {
+      it('should not get current user without authorized user', (done) => {
         request('localhost:' + port)
           .get('/api/recipes/mine')
           .set('token', fakeToken)
@@ -182,6 +182,42 @@ describe('ccbrecipe server', () => {
             if (err) console.log(err.message);
             expect(res.status).to.eql(401);
             expect(res.body.msg).to.eql('Invalid Authentication');
+            done();
+          });
+      });
+
+      it('should get a specific recipe', (done) => {
+        request('localhost:' + port)
+          .get('/api/recipes/' + newRecipe._id)
+          .set('token', userToken)
+          .end((err, res) => {
+            expect(err).to.eql(null);
+            expect(res.status).to.eql(200);
+            expect(res.body.name).to.eql('vacuum noises');
+            done();
+          });
+      });
+
+      it('should not get a recipe without authorized user', (done) => {
+        request('localhost:' + port)
+          .get('/api/recipes/' + newRecipe._id)
+          .set('token', fakeToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('Invalid Authentication');
+            done();
+          });
+      });
+
+      it('should not get a recipe without a valid recipe id', (done) => {
+        request('localhost:' + port)
+          .get('/api/recipes/fakerecipeid')
+          .set('token', userToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(404);
+            expect(res.body.msg).to.eql('recipe not found');
             done();
           });
       });
