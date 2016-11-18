@@ -6,9 +6,9 @@ const request = chai.request;
 const port = process.env.PORT = 5050;
 const setup = require(__dirname + '/../test_setup');
 const teardown = require(__dirname + '/../test_teardown');
-var Recipe;
-var User;
-var connection;
+var Recipe = {};
+var User = {};
+var connection = {};
 
 describe('ccbrecipe server', () => {
 
@@ -86,8 +86,8 @@ describe('ccbrecipe server', () => {
     });
 
     describe('the GET method', () => {
-      var currentUser;
-      var newRecipe;
+      var currentUser = {};
+      var newRecipe = {};
 
       before((done) => {
         request('localhost:' + port)
@@ -108,6 +108,13 @@ describe('ccbrecipe server', () => {
               done();
             });
           });
+      });
+
+      after((done) => {
+        Recipe.findOneAndRemove({ _id: newRecipe._id }, (err) => {
+          if (err) console.log(err);
+          done();
+        });
       });
 
       it('should get all the recipes', (done) => {
