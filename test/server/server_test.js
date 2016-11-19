@@ -229,5 +229,90 @@ describe('ccbrecipe server', () => {
           });
       });
     });
+
+    describe('the PUT method', () => {
+      var currentUser = {};
+      var newRecipe = {};
+
+      before((done) => {
+        request('localhost:' + port)
+          .get('/api/profile')
+          .set('token', userToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            currentUser = res.body;
+
+            newRecipe = new Recipe({
+              name: 'termites',
+              current: true,
+              creatorId: currentUser.id
+            });
+
+            newRecipe.save((err) => {
+              if (err) console.log(err);
+              done();
+            });
+          });
+      });
+
+      after((done) => {
+        Recipe.findOneAndRemove({ _id: newRecipe._id }, (err) => {
+          if (err) console.log(err);
+          done();
+        });
+      });
+
+      it('should PUT an update to a recipe', (done) => {
+        request('localhost:' + port)
+          .put('/api/recipes/' + newRecipe._id)
+          .set('token', userToken)
+          .send({ name: 'delicious ants' })
+          .end((err, res) => {
+            expect(err).to.eql(null);
+            expect(res.status).to.eql(200);
+            expect(res.body.msg).to.eql('recipe updated by creator');
+            done();
+          });
+      });
+
+      it('should not put without authorized user', (done) => {
+        request('localhost:' + port)
+          .put('/api/recipes/' + newRecipe._id)
+          .set('token', fakeToken)
+          .send({ name: 'delicious ants' })
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('Invalid Authentication');
+            done();
+          });
+      });
+
+      it('should not put without valid data', (done) => {
+        request('localhost:' + port)
+          .put('/api/recipes/' + newRecipe._id)
+          .set('token', userToken)
+          .send({ wrong: 'data' })
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('error updating recipe');
+            done();
+          });
+      });
+
+      it('should not put without a valid recipe id', (done) => {
+        request('localhost:' + port)
+          .put('/api/recipes/fakerecipeid')
+          .set('token', userToken)
+          .send({ name: 'delicious ants' })
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(404);
+            expect(res.body.msg).to.eql('recipe not found');
+            done();
+          });
+      });
+    });
   });
 });

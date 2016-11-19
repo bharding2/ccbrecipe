@@ -24,15 +24,17 @@ module.exports = function(connection, authenticat) {
 
     if (req.user.admin) {
       return Recipe.update({ _id: req.params.id }, recipeData, (err, data) => {
-        if (!data.nModified) return handleErr(null, res, 403, 'no recipe found');
         if (err) return handleErr(err, res, 401, 'error updating recipe');
+        if (!data.ok) return handleErr(null, res, 401, 'error updating recipe');
+        if (!data.nModified) return handleErr(null, res, 404, 'recipe not found');
         return res.status(200).json({ msg: 'recipe updated by admin' });
       });
     }
 
     Recipe.update({ _id: req.params.id, creatorId: req.user._id }, recipeData, (err, data) => {
-      if (!data.nModified) return handleErr(null, res, 403, 'no recipe found');
       if (err) return handleErr(err, res, 401, 'error updating recipe');
+      if (!data.ok) return handleErr(null, res, 401, 'error updating recipe');
+      if (!data.nModified) return handleErr(null, res, 404, 'recipe not found');
       res.status(200).json({ msg: 'recipe updated by creator' });
     });
   });
