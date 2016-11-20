@@ -314,5 +314,67 @@ describe('ccbrecipe server', () => {
           });
       });
     });
+
+    describe('the DELETE method', () => {
+      var currentUser = {};
+      var newRecipe = {};
+
+      before((done) => {
+        request('localhost:' + port)
+          .get('/api/profile')
+          .set('token', userToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            currentUser = res.body;
+
+            newRecipe = new Recipe({
+              name: 'human flesh',
+              current: true,
+              creatorId: currentUser.id
+            });
+
+            newRecipe.save((err) => {
+              if (err) console.log(err);
+              done();
+            });
+          });
+      });
+
+      it('should delete a recipe', (done) => {
+        request('localhost:' + port)
+          .delete('/api/recipes/' + newRecipe._id)
+          .set('token', userToken)
+          .end((err, res) => {
+            expect(err).to.eql(null);
+            expect(res.status).to.eql(200);
+            expect(res.body.msg).to.eql('recipe deleted by creator');
+            done();
+          });
+      });
+
+      it('should not delete without authorized user', (done) => {
+        request('localhost:' + port)
+          .delete('/api/recipes/' + newRecipe._id)
+          .set('token', fakeToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('Invalid Authentication');
+            done();
+          });
+      });
+
+      it('should not delete without a valid recipe id', (done) => {
+        request('localhost:' + port)
+          .delete('/api/recipes/fakerecipeid')
+          .set('token', userToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(404);
+            expect(res.body.msg).to.eql('recipe not found');
+            done();
+          });
+      });
+    });
   });
 });
