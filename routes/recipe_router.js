@@ -42,14 +42,16 @@ module.exports = function(connection, authenticat) {
   recipeRouter.delete('/recipes/:id', authenticat.tokenAuth,
   (req, res) => {
     if (req.user.admin) {
-      return Recipe.findOneAndRemove({ _id: req.params.id }, (err) => {
+      return Recipe.findOneAndRemove({ _id: req.params.id }, (err, doc) => {
         if (err) return handleErr(err, res, 401, 'error deleting recipe');
+        if (!doc) return handleErr(null, res, 404, 'recipe not found');
         return res.status(200).json({ msg: 'recipe deleted by admin' });
       });
     }
 
-    Recipe.findOneAndRemove({ _id: req.params.id, creatorId: req.user._id }, (err) => {
+    Recipe.findOneAndRemove({ _id: req.params.id, creatorId: req.user._id }, (err, doc) => {
       if (err) return handleErr(err, res, 401, 'error deleting recipe');
+      if (!doc) return handleErr(null, res, 404, 'recipe not found');
       res.status(200).json({ msg: 'recipe deleted by creator' });
     });
   });
