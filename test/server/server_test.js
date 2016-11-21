@@ -377,4 +377,46 @@ describe('ccbrecipe server', () => {
       });
     });
   });
+
+  describe('User methods', () => {
+    var userToken = '';
+    var fakeToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3QxIiwiaWF0IjoxNDc4OTc5MTc4fQ.JB5gC7TLxMoTvzXP8oKC50Oi6YQJ4R6R9YWn5V_fB4w'; // eslint-disable-line max-len
+
+    before((done) => {
+      request('localhost:' + port)
+        .post('/api/signup')
+        .send({ username: 'test2', password: 'pass2' })
+        .end((err, res) => {
+          if (err) return console.log(err);
+          userToken = res.body.token;
+          done();
+        });
+    });
+
+    describe('user profile route', () => {
+      it('should get the current user profile', (done) => {
+        request('localhost:' + port)
+          .get('/api/profile')
+          .set('token', userToken)
+          .end((err, res) => {
+            expect(err).to.eql(null);
+            expect(res.status).to.eql(200);
+            expect(res.body.username).to.eql('test2');
+            done();
+          });
+      });
+
+      it('should not get profile without authorized user', (done) => {
+        request('localhost:' + port)
+          .get('/api/profile')
+          .set('token', fakeToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('Invalid Authentication');
+            done();
+          });
+      });
+    });
+  });
 });
