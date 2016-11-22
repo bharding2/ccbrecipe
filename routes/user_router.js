@@ -50,12 +50,5 @@ module.exports = function(connection, authenticat) {
     });
   });
 
-  userRouter.get('/users/role/:role', authenticat.tokenAuth, (req, res) => {
-    User.find({ roles: req.params.role }, (err, data) => {
-      if (err) return handleErr(err, res, 403, 'error accessing users');
-      res.status(200).json(data);
-    });
-  });
-
   return userRouter;
 };
