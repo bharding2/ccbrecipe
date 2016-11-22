@@ -418,5 +418,45 @@ describe('ccbrecipe server', () => {
           });
       });
     });
+
+    describe('the GET method', () => {
+      var currentUser = {};
+
+      before((done) => {
+        request('localhost:' + port)
+          .get('/api/profile')
+          .set('token', userToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            currentUser = res.body;
+            done();
+          });
+      });
+
+      it('should get all the users', (done) => {
+        request('localhost:' + port)
+          .get('/api/users/all')
+          .set('token', userToken)
+          .end((err, res) => {
+            expect(err).to.eql(null);
+            expect(res.status).to.eql(200);
+            expect(Array.isArray(res.body)).to.eql(true);
+            expect(res.body[0].username).to.eql('test');
+            done();
+          });
+      });
+
+      it('should not get all without authorized user', (done) => {
+        request('localhost:' + port)
+          .get('/api/recipes/all')
+          .set('token', fakeToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('Invalid Authentication');
+            done();
+          });
+      });
+    });
   });
 });
