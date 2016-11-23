@@ -46,6 +46,7 @@ module.exports = function(connection, authenticat) {
   userRouter.get('/users/:id', authenticat.tokenAuth, (req, res) => {
     User.findOne({ _id: req.params.id }, (err, data) => {
       if (err) return handleErr(err, res, 403, 'error accessing user');
+      if (!data) return handleErr(null, res, 404, 'user not found');
       res.status(200).json(data);
     });
   });

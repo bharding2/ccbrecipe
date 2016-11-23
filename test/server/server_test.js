@@ -457,6 +457,42 @@ describe('ccbrecipe server', () => {
             done();
           });
       });
+
+      it('should get a specific recipe', (done) => {
+        request('localhost:' + port)
+          .get('/api/users/' + currentUser.id)
+          .set('token', userToken)
+          .end((err, res) => {
+            expect(err).to.eql(null);
+            expect(res.status).to.eql(200);
+            expect(res.body.username).to.eql('test2');
+            done();
+          });
+      });
+
+      it('should not get a recipe without authorized user', (done) => {
+        request('localhost:' + port)
+          .get('/api/users/' + currentUser.id)
+          .set('token', fakeToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('Invalid Authentication');
+            done();
+          });
+      });
+
+      it('should not get a recipe without a valid recipe id', (done) => {
+        request('localhost:' + port)
+          .get('/api/users/fakeuserid')
+          .set('token', userToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(403);
+            expect(res.body.msg).to.eql('error accessing user');
+            done();
+          });
+      });
     });
   });
 });
