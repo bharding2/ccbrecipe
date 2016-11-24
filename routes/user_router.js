@@ -16,8 +16,9 @@ module.exports = function(connection, authenticat) {
 
     if (req.user.admin || req.user._id.toString() === req.params.id) {
       return User.update({ _id: req.params.id }, userData, (err, data) => {
-        if (!data.nModified) return handleErr(null, res, 403, 'no user found');
         if (err) return handleErr(err, res, 401, 'error updating user');
+        if (!data.ok) return handleErr(null, res, 401, 'error updating user');
+        if (!data.nModified) return handleErr(null, res, 404, 'user not found');
         return res.status(200).json({ msg: 'user updated' });
       });
     }
@@ -46,6 +47,7 @@ module.exports = function(connection, authenticat) {
   userRouter.get('/users/:id', authenticat.tokenAuth, (req, res) => {
     User.findOne({ _id: req.params.id }, (err, data) => {
       if (err) return handleErr(err, res, 403, 'error accessing user');
+      if (!data) return handleErr(null, res, 404, 'user not found');
       res.status(200).json(data);
     });
   });
