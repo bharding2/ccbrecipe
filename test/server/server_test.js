@@ -494,5 +494,83 @@ describe('ccbrecipe server', () => {
           });
       });
     });
+
+    describe('the PUT method', () => {
+      var currentUser = {};
+
+      before((done) => {
+        request('localhost:' + port)
+          .get('/api/profile')
+          .set('token', userToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            currentUser = res.body;
+
+            done();
+          });
+      });
+
+      after((done) => {
+        request('localhost:' + port)
+          .put('/api/users/' + currentUser.id)
+          .set('token', userToken)
+          .send({ username: 'test2' })
+          .end(() => {
+            done();
+          });
+      });
+
+      it('should not put without authorized user', (done) => {
+        request('localhost:' + port)
+          .put('/api/users/' + currentUser.id)
+          .set('token', fakeToken)
+          .send({ username: 'test3' })
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('Invalid Authentication');
+            done();
+          });
+      });
+
+      it('should not put without valid data', (done) => {
+        request('localhost:' + port)
+          .put('/api/users/' + currentUser.id)
+          .set('token', userToken)
+          .send({ wrong: 'data' })
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('error updating user');
+            done();
+          });
+      });
+
+      it('should not put without a valid user id', (done) => {
+        request('localhost:' + port)
+          .put('/api/users/fakerecipeid')
+          .set('token', userToken)
+          .send({ username: 'test3' })
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('unauthorized user update');
+            done();
+          });
+      });
+
+      it('should PUT an update to a user', (done) => {
+        request('localhost:' + port)
+          .put('/api/users/' + currentUser.id)
+          .set('token', userToken)
+          .send({ username: 'test3' })
+          .end((err, res) => {
+            expect(err).to.eql(null);
+            expect(res.status).to.eql(200);
+            expect(res.body.msg).to.eql('user updated');
+            done();
+          });
+      });
+    });
   });
 });

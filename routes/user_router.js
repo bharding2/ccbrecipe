@@ -16,8 +16,9 @@ module.exports = function(connection, authenticat) {
 
     if (req.user.admin || req.user._id.toString() === req.params.id) {
       return User.update({ _id: req.params.id }, userData, (err, data) => {
-        if (!data.nModified) return handleErr(null, res, 403, 'no user found');
         if (err) return handleErr(err, res, 401, 'error updating user');
+        if (!data.ok) return handleErr(null, res, 401, 'error updating user');
+        if (!data.nModified) return handleErr(null, res, 404, 'user not found');
         return res.status(200).json({ msg: 'user updated' });
       });
     }
