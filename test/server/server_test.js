@@ -495,6 +495,46 @@ describe('ccbrecipe server', () => {
       });
     });
 
+    describe('the DELETE method', () => {
+      var currentUser = {};
+
+      before((done) => {
+        request('localhost:' + port)
+          .get('/api/profile')
+          .set('token', userToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            currentUser = res.body;
+
+            done();
+          });
+      });
+
+      it('should not delete without authorized user', (done) => {
+        request('localhost:' + port)
+          .delete('/api/users/' + currentUser.id)
+          .set('token', fakeToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('Invalid Authentication');
+            done();
+          });
+      });
+
+      it('should not delete without admin privileges', (done) => {
+        request('localhost:' + port)
+          .delete('/api/users/' + currentUser.id)
+          .set('token', userToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('unauthorized user update');
+            done();
+          });
+      });
+    });
+
     describe('the PUT method', () => {
       var currentUser = {};
 
