@@ -34,7 +34,7 @@ describe('ccbrecipe server', () => {
         .post('/api/signup')
         .send({ username: 'test', password: 'pass' })
         .end((err, res) => {
-          if (err) return console.log(err);
+          if (err) console.log(err);
           userToken = res.body.token;
           done();
         });
@@ -387,9 +387,20 @@ describe('ccbrecipe server', () => {
         .post('/api/signup')
         .send({ username: 'test2', password: 'pass2' })
         .end((err, res) => {
-          if (err) return console.log(err);
+          if (err) console.log(err);
           userToken = res.body.token;
-          done();
+
+          request('localhost:' + port)
+            .get('/api/profile')
+            .set('token', userToken)
+            .end((err, res) => {
+              if (err) console.log(err.message);
+
+              User.findOneAndUpdate({ _id: res.body.id }, { admin: true }, (err) => {
+                if (err) console.log(err);
+                done();
+              });
+            });
         });
     });
 
@@ -495,6 +506,82 @@ describe('ccbrecipe server', () => {
       });
     });
 
+    describe('the PUT method', () => {
+      var testUser = {};
+
+      before((done) => {
+        request('localhost:' + port)
+          .post('/api/signup')
+          .send({ username: 'test3', password: 'pass3' })
+          .end((err, res) => {
+            if (err) console.log(err);
+            var testToken = res.body.token;
+
+            request('localhost:' + port)
+              .get('/api/profile')
+              .set('token', testToken)
+              .end((err, testRes) => {
+                if (err) console.log(err.message);
+
+                testUser = testRes.body;
+                done();
+              });
+          });
+      });
+
+      it('should not put without authorized user', (done) => {
+        request('localhost:' + port)
+          .put('/api/users/' + testUser.id)
+          .set('token', fakeToken)
+          .send({ username: 'test4' })
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('Invalid Authentication');
+            done();
+          });
+      });
+
+      it('should not put without valid data', (done) => {
+        request('localhost:' + port)
+          .put('/api/users/' + testUser.id)
+          .set('token', userToken)
+          .send({ wrong: 'data' })
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('error updating user');
+            done();
+          });
+      });
+
+      it('should not put without a valid user id', (done) => {
+        request('localhost:' + port)
+          .put('/api/users/fakerecipeid')
+          .set('token', userToken)
+          .send({ username: 'test4' })
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(404);
+            expect(res.body.msg).to.eql('user not found');
+            done();
+          });
+      });
+
+      it('should PUT an update to a user', (done) => {
+        request('localhost:' + port)
+          .put('/api/users/' + testUser.id)
+          .set('token', userToken)
+          .send({ username: 'test4' })
+          .end((err, res) => {
+            expect(err).to.eql(null);
+            expect(res.status).to.eql(200);
+            expect(res.body.msg).to.eql('user updated');
+            done();
+          });
+      });
+    });
+
     describe('the DELETE method', () => {
       var currentUser = {};
 
@@ -522,92 +609,14 @@ describe('ccbrecipe server', () => {
           });
       });
 
-      it('should not delete without admin privileges', (done) => {
+      it('should delete a user', (done) => {
         request('localhost:' + port)
           .delete('/api/users/' + currentUser.id)
           .set('token', userToken)
           .end((err, res) => {
             if (err) console.log(err.message);
-            expect(res.status).to.eql(401);
-            expect(res.body.msg).to.eql('unauthorized user update');
-            done();
-          });
-      });
-    });
-
-    describe('the PUT method', () => {
-      var currentUser = {};
-
-      before((done) => {
-        request('localhost:' + port)
-          .get('/api/profile')
-          .set('token', userToken)
-          .end((err, res) => {
-            if (err) console.log(err.message);
-            currentUser = res.body;
-
-            done();
-          });
-      });
-
-      after((done) => {
-        request('localhost:' + port)
-          .put('/api/users/' + currentUser.id)
-          .set('token', userToken)
-          .send({ username: 'test2' })
-          .end(() => {
-            done();
-          });
-      });
-
-      it('should not put without authorized user', (done) => {
-        request('localhost:' + port)
-          .put('/api/users/' + currentUser.id)
-          .set('token', fakeToken)
-          .send({ username: 'test3' })
-          .end((err, res) => {
-            if (err) console.log(err.message);
-            expect(res.status).to.eql(401);
-            expect(res.body.msg).to.eql('Invalid Authentication');
-            done();
-          });
-      });
-
-      it('should not put without valid data', (done) => {
-        request('localhost:' + port)
-          .put('/api/users/' + currentUser.id)
-          .set('token', userToken)
-          .send({ wrong: 'data' })
-          .end((err, res) => {
-            if (err) console.log(err.message);
-            expect(res.status).to.eql(401);
-            expect(res.body.msg).to.eql('error updating user');
-            done();
-          });
-      });
-
-      it('should not put without a valid user id', (done) => {
-        request('localhost:' + port)
-          .put('/api/users/fakerecipeid')
-          .set('token', userToken)
-          .send({ username: 'test3' })
-          .end((err, res) => {
-            if (err) console.log(err.message);
-            expect(res.status).to.eql(401);
-            expect(res.body.msg).to.eql('unauthorized user update');
-            done();
-          });
-      });
-
-      it('should PUT an update to a user', (done) => {
-        request('localhost:' + port)
-          .put('/api/users/' + currentUser.id)
-          .set('token', userToken)
-          .send({ username: 'test3' })
-          .end((err, res) => {
-            expect(err).to.eql(null);
             expect(res.status).to.eql(200);
-            expect(res.body.msg).to.eql('user updated');
+            expect(res.body.msg).to.eql('user deleted by admin');
             done();
           });
       });
