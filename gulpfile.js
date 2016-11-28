@@ -5,6 +5,7 @@ const sass = require('gulp-sass');
 const maps = require('gulp-sourcemaps');
 const eslint = require('gulp-eslint');
 const mocha = require('gulp-mocha');
+const istanbul = require('gulp-istanbul');
 const KarmaServer = require('karma').Server;
 
 const apiFiles = ['./*.js', './lib/*.js', './models/*.js', './routes/*.js'];
@@ -68,9 +69,17 @@ gulp.task('webpack:test', () => {
     .pipe(gulp.dest('./test'));
 });
 
-gulp.task('test:mocha', () => {
+gulp.task('test:pretest', () => {
+  return gulp.src(apiFiles)
+    .pipe(istanbul())
+    .pipe(istanbul.hookRequire());
+});
+
+gulp.task('test:mocha', ['test:pretest'], () => {
   return gulp.src(serverTestFiles)
-    .pipe(mocha());
+    .pipe(mocha())
+    .pipe(istanbul.writeReports())
+    .pipe(istanbul.enforceThresholds({ thresholds: { global: 60 } }));
 });
 
 gulp.task('test:karma', ['webpack:test'], (done) => {
