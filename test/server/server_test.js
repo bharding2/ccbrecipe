@@ -27,6 +27,7 @@ describe('ccbrecipe server', () => {
 
   describe('Recipe methods', () => {
     var userToken = '';
+    var adminToken = '';
     var fakeToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3QxIiwiaWF0IjoxNDc4OTc5MTc4fQ.JB5gC7TLxMoTvzXP8oKC50Oi6YQJ4R6R9YWn5V_fB4w'; // eslint-disable-line max-len
 
     before((done) => {
@@ -37,6 +38,29 @@ describe('ccbrecipe server', () => {
           if (err) console.log(err);
           userToken = res.body.token;
           done();
+        });
+    });
+
+    before((done) => {
+      request('localhost:' + port)
+        .post('/api/signup')
+        .send({ username: 'admin1', password: 'adminpass1' })
+        .end((err, res) => {
+          if (err) console.log(err);
+          adminToken = res.body.token;
+
+          request('localhost:' + port)
+            .get('/api/profile')
+            .set('token', adminToken)
+            .end((err, res) => {
+              if (err) console.log(err.message);
+
+              User.findOneAndUpdate({ _id: res.body.id }, { admin: true }, (err) => {
+                if (err) console.log(err);
+                console.log('admins ahoy');
+                done();
+              });
+            });
         });
     });
 
