@@ -27,6 +27,7 @@ describe('ccbrecipe server', () => {
 
   describe('Recipe methods', () => {
     var userToken = '';
+    var adminToken = '';
     var fakeToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3QxIiwiaWF0IjoxNDc4OTc5MTc4fQ.JB5gC7TLxMoTvzXP8oKC50Oi6YQJ4R6R9YWn5V_fB4w'; // eslint-disable-line max-len
 
     before((done) => {
@@ -37,6 +38,28 @@ describe('ccbrecipe server', () => {
           if (err) console.log(err);
           userToken = res.body.token;
           done();
+        });
+    });
+
+    before((done) => {
+      request('localhost:' + port)
+        .post('/api/signup')
+        .send({ username: 'admin1', password: 'adminpass1' })
+        .end((err, res) => {
+          if (err) console.log(err);
+          adminToken = res.body.token;
+
+          request('localhost:' + port)
+            .get('/api/profile')
+            .set('token', adminToken)
+            .end((err, res) => {
+              if (err) console.log(err.message);
+
+              User.findOneAndUpdate({ _id: res.body.id }, { admin: true }, (err) => {
+                if (err) console.log(err);
+                done();
+              });
+            });
         });
     });
 
@@ -275,6 +298,19 @@ describe('ccbrecipe server', () => {
           });
       });
 
+      it('should admin PUT an update to a recipe', (done) => {
+        request('localhost:' + port)
+          .put('/api/recipes/' + newRecipe._id)
+          .set('token', adminToken)
+          .send({ name: 'delicious admins' })
+          .end((err, res) => {
+            expect(err).to.eql(null);
+            expect(res.status).to.eql(200);
+            expect(res.body.msg).to.eql('recipe updated by admin');
+            done();
+          });
+      });
+
       it('should not put without authorized user', (done) => {
         request('localhost:' + port)
           .put('/api/recipes/' + newRecipe._id)
@@ -301,11 +337,37 @@ describe('ccbrecipe server', () => {
           });
       });
 
+      it('should not admin put without valid data', (done) => {
+        request('localhost:' + port)
+          .put('/api/recipes/' + newRecipe._id)
+          .set('token', adminToken)
+          .send({ wrong: 'data' })
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('error updating recipe');
+            done();
+          });
+      });
+
       it('should not put without a valid recipe id', (done) => {
         request('localhost:' + port)
           .put('/api/recipes/fakerecipeid')
           .set('token', userToken)
           .send({ name: 'delicious ants' })
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(404);
+            expect(res.body.msg).to.eql('recipe not found');
+            done();
+          });
+      });
+
+      it('should not admin put without a valid recipe id', (done) => {
+        request('localhost:' + port)
+          .put('/api/recipes/fakerecipeid')
+          .set('token', adminToken)
+          .send({ name: 'delicious admins' })
           .end((err, res) => {
             if (err) console.log(err.message);
             expect(res.status).to.eql(404);
