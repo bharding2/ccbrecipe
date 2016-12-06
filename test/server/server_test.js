@@ -256,6 +256,7 @@ describe('ccbrecipe server', () => {
     describe('the PUT method', () => {
       var currentUser = {};
       var newRecipe = {};
+      var adminRecipe = {};
 
       before((done) => {
         request('localhost:' + port)
@@ -278,8 +279,36 @@ describe('ccbrecipe server', () => {
           });
       });
 
+      before((done) => {
+        request('localhost:' + port)
+          .get('/api/profile')
+          .set('token', userToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            currentUser = res.body;
+
+            adminRecipe = new Recipe({
+              name: 'termites admins',
+              current: true,
+              creatorId: currentUser.id
+            });
+
+            adminRecipe.save((err) => {
+              if (err) console.log(err);
+              done();
+            });
+          });
+      });
+
       after((done) => {
         Recipe.findOneAndRemove({ _id: newRecipe._id }, (err) => {
+          if (err) console.log(err);
+          done();
+        });
+      });
+
+      after((done) => {
+        Recipe.findOneAndRemove({ _id: adminRecipe._id }, (err) => {
           if (err) console.log(err);
           done();
         });
@@ -300,7 +329,7 @@ describe('ccbrecipe server', () => {
 
       it('should admin PUT an update to a recipe', (done) => {
         request('localhost:' + port)
-          .put('/api/recipes/' + newRecipe._id)
+          .put('/api/recipes/' + adminRecipe._id)
           .set('token', adminToken)
           .send({ name: 'delicious admins' })
           .end((err, res) => {
@@ -380,6 +409,7 @@ describe('ccbrecipe server', () => {
     describe('the DELETE method', () => {
       var currentUser = {};
       var newRecipe = {};
+      var adminRecipe = {};
 
       before((done) => {
         request('localhost:' + port)
@@ -402,6 +432,27 @@ describe('ccbrecipe server', () => {
           });
       });
 
+      before((done) => {
+        request('localhost:' + port)
+          .get('/api/profile')
+          .set('token', userToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            currentUser = res.body;
+
+            adminRecipe = new Recipe({
+              name: 'admin flesh',
+              current: true,
+              creatorId: currentUser.id
+            });
+
+            adminRecipe.save((err) => {
+              if (err) console.log(err);
+              done();
+            });
+          });
+      });
+
       it('should delete a recipe', (done) => {
         request('localhost:' + port)
           .delete('/api/recipes/' + newRecipe._id)
@@ -410,6 +461,18 @@ describe('ccbrecipe server', () => {
             expect(err).to.eql(null);
             expect(res.status).to.eql(200);
             expect(res.body.msg).to.eql('recipe deleted by creator');
+            done();
+          });
+      });
+
+      it('should admin delete a recipe', (done) => {
+        request('localhost:' + port)
+          .delete('/api/recipes/' + adminRecipe._id)
+          .set('token', adminToken)
+          .end((err, res) => {
+            expect(err).to.eql(null);
+            expect(res.status).to.eql(200);
+            expect(res.body.msg).to.eql('recipe deleted by admin');
             done();
           });
       });
