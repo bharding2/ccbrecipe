@@ -505,7 +505,19 @@ describe('ccbrecipe server', () => {
 
   describe('User methods', () => {
     var userToken = '';
+    var nonAdminToken = '';
     var fakeToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3QxIiwiaWF0IjoxNDc4OTc5MTc4fQ.JB5gC7TLxMoTvzXP8oKC50Oi6YQJ4R6R9YWn5V_fB4w'; // eslint-disable-line max-len
+
+    before((done) => {
+      request('localhost:' + port)
+        .post('/api/signup')
+        .send({ username: 'test5', password: 'pass5' })
+        .end((err, res) => {
+          if (err) console.log(err);
+          nonAdminToken = res.body.token;
+          done();
+        });
+    });
 
     before((done) => {
       request('localhost:' + port)
@@ -663,6 +675,19 @@ describe('ccbrecipe server', () => {
             if (err) console.log(err.message);
             expect(res.status).to.eql(401);
             expect(res.body.msg).to.eql('Invalid Authentication');
+            done();
+          });
+      });
+
+      it('should not put without admin user', (done) => {
+        request('localhost:' + port)
+          .put('/api/users/' + testUser.id)
+          .set('token', nonAdminToken)
+          .send({ username: 'test4' })
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('unauthorized user update');
             done();
           });
       });
