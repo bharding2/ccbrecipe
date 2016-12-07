@@ -759,6 +759,18 @@ describe('ccbrecipe server', () => {
           });
       });
 
+      it('should not delete without admin user', (done) => {
+        request('localhost:' + port)
+          .delete('/api/users/' + currentUser.id)
+          .set('token', nonAdminToken)
+          .end((err, res) => {
+            if (err) console.log(err.message);
+            expect(res.status).to.eql(401);
+            expect(res.body.msg).to.eql('unauthorized user update');
+            done();
+          });
+      });
+
       it('should delete a user', (done) => {
         request('localhost:' + port)
           .delete('/api/users/' + currentUser.id)
