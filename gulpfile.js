@@ -22,7 +22,16 @@ gulp.task('webpack:dev', ['html:dev', 'css:dev', 'img:dev'], () => {
       },
       plugins: [
         new webpack.EnvironmentPlugin(['PORT'])
-      ]
+      ],
+      module: {
+        loaders: [
+          {
+            test: /\.js?/,
+            include: __dirname + '/app/js/',
+            loader: 'babel'
+          }
+        ]
+      }
     }))
     .pipe(gulp.dest('.build'));
 });
