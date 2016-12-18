@@ -50,7 +50,7 @@ gulp.task('sass:dev', () => {
 });
 
 gulp.task('css:dev', ['sass:dev'], () => {
-  return gulp.src('app/styles/main.css')
+  return gulp.src('app/**/*.css')
     .pipe(gulp.dest('./build'));
 });
 
