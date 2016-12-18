@@ -33,7 +33,7 @@ gulp.task('webpack:dev', ['html:dev', 'css:dev', 'img:dev'], () => {
         ]
       }
     }))
-    .pipe(gulp.dest('.build'));
+    .pipe(gulp.dest('./build'));
 });
 
 gulp.task('html:dev', () => {
