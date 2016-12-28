@@ -13,6 +13,10 @@ const appFiles = ['./app/**/*.js'];
 const serverTestFiles = ['./test/server/*test.js'];
 const clientTestFiles = ['./test/client/*test.js'];
 
+const devApiUrl = 'localhost:' + process.env.PORT;
+
+if (process.env.NODE_ENV !== 'production') process.env.API_URL = devApiUrl;
+
 gulp.task('webpack:dev', ['html:dev', 'css:dev', 'img:dev'], () => {
   return gulp.src('app/js/entry.js')
     .pipe(webpackStream({
@@ -21,7 +25,7 @@ gulp.task('webpack:dev', ['html:dev', 'css:dev', 'img:dev'], () => {
         filename: 'bundle.js'
       },
       plugins: [
-        new webpack.EnvironmentPlugin(['PORT'])
+        new webpack.EnvironmentPlugin(['PORT', 'API_URL'])
       ],
       module: {
         loaders: [

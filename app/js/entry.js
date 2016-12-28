@@ -2,7 +2,7 @@ const React = require('react');
 const ReactDOM = require('react-dom');
 
 // api_url standin
-var apiUrl = 'localhost:5555/api/recipes/all';
+var apiUrl = process.env.API_URL;
 
 const RecipeBox = React.createClass({
   render: function() {
