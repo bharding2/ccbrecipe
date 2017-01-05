@@ -1,7 +1,10 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
 
-// api_url standin
+const Router = require('react-router').Router;
+const Route = require('react-router').Route;
+const Link = require('react-router').Link;
+
 var apiUrl = process.env.API_URL;
 
 const RecipeBox = React.createClass({
