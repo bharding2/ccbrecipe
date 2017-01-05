@@ -1,11 +1,12 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
+const ReactRouter = require('react-router');
 
-const Router = require('react-router').Router;
-const Route = require('react-router').Route;
-const Link = require('react-router').Link;
-const browserHistory = require('react-router').browserHistory;
-const withRouter = require('react-router').withRouter;
+const Router = ReactRouter.Router;
+const Route = ReactRouter.Route;
+const Link = ReactRouter.Link;
+const browserHistory = ReactRouter.browserHistory;
+const withRouter = ReactRouter.withRouter;
 
 var apiUrl = process.env.API_URL;
 
