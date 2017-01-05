@@ -10,7 +10,7 @@
     "install": "node lib/mkdir_db.js",
     "test": "./node_modules/mocha/bin/mocha --recursive",
     "start": "node server.js",
-    "heroku-postbuild": "gulp build:dev"
+    "postinstall": "gulp build:dev"
   },
   "repository": {
     "type": "git",
