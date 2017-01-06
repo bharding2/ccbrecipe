@@ -23,8 +23,11 @@ const RecipeBox = React.createClass({
 ReactDOM.render((
   <Router history={ browserHistory }>
     <Route path="/" url={ apiUrl } component={ RecipeBox }>
-      <Route path="login" component={Login} />
-      <Route path="logout" component={Logout} />
+      <Route path="login" component={ Login } />
+      <Route path="logout" component={ Logout } />
+      <Route path="recipes" component={ Recipes }>
+        <Route path="/user/:userId" component={ Recipe }/>
+      </Route>
     </Route>
   </Router>
 ), document.getElementById('ccbrecipe_app'));
