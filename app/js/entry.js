@@ -26,7 +26,7 @@ ReactDOM.render((
       <Route path="login" component={ Login } />
       <Route path="logout" component={ Logout } />
       <Route path="recipes" component={ Recipes }>
-        <Route path="/user/:userId" component={ Recipe }/>
+        <Route path=":recipeId" component={ Recipe }/>
       </Route>
     </Route>
   </Router>
