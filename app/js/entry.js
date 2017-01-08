@@ -26,6 +26,11 @@ ReactDOM.render((
       <Route path="login" component={ Login } />
       <Route path="logout" component={ Logout } />
       <Route path="recipes" component={ Recipes }>
+        <Route path="all" recipesBatch= { all } component={ Recipes }/>
+        <Route path="current" recipesBatch= { current } component={ Recipes }/>
+        <Route path="mine" recipesBatch= { mine } component={ Recipes }/>
+      </Route>
+      <Route path="recipe" component={ Recipes }>
         <Route path=":recipeId" component={ Recipe }/>
       </Route>
     </Route>
