@@ -25,23 +25,23 @@ ReactDOM.render((
     <Route path="/" url={ apiUrl } component={ RecipeBox }>
       <Route path="login" component={ Login } />
       <Route path="logout" component={ Logout } />
-      <Route path="recipes" component={ Recipes }>
-        <Route path="all" recipesBatch= { all } component={ Recipes }/>
-        <Route path="current" recipesBatch= { current } component={ Recipes }/>
-        <Route path="mine" recipesBatch= { mine } component={ Recipes }/>
+      <Route path="recipes" component={ RecipeListContainer }>
+        <Route path="all" recipesBatch= { all } component={ RecipeListContainer }/>
+        <Route path="current" recipesBatch= { current } component={ RecipeListContainer }/>
+        <Route path="mine" recipesBatch= { mine } component={ RecipeListContainer}/>
       </Route>
-      <Route path="recipe" component={ Recipes }>
-        <Route path=":recipeId" component={ Recipe }/>
+      <Route path="recipe" component={ RecipeContainer }>
+        <Route path=":recipeId" component={ RecipeContainer }/>
       </Route>
       <Route path="admin" component={ AdminBox }>
-        <Route path="edit_recipe" component={ EditRecipes }>
-          <Route path=":recipeId" component={ EditRecipe }/>
+        <Route path="edit_recipe" component={ EditRecipeContainer }>
+          <Route path=":recipeId" component={ EditRecipeContainer }/>
         </Route>
-        <Route path="users" recipesBatch= { current } component={ Users }>
-          <Route path="new" component={ NewUser }/>
-          <Route path=":userId" component={ User }/>
-          <Route path="edit_user" component={ EditUsers }>
-            <Route path=":userId" component={ EditUser }/>
+        <Route path="users" component={ UsersListContainer }>
+          <Route path="new" component={ NewUserContainer }/>
+          <Route path=":userId" component={ UserContainer }/>
+          <Route path="edit_user" component={ EditUserContainer }>
+            <Route path=":userId" component={ EditUserContainer }/>
           </Route>
         </Route>
       </Route>
