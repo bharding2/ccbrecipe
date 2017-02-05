@@ -4,3 +4,5 @@
 ##### A recipe tracking and storage app
 
 ### API Documentation
+
+built under the MIT License.
