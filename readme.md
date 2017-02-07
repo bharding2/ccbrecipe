@@ -4,6 +4,8 @@
 ##### A recipe tracking and storage app
 
 ### API Documentation
-##### Routes
+#### Routes
+##### Auth Routes
+##### Recipe Routes
 
 built under the MIT License.
