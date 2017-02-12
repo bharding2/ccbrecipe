@@ -8,4 +8,8 @@
 ##### Auth Routes
 ##### Recipe Routes
 
+#### Models
+##### Recipe Model
+##### User Model
+
 built under the MIT License.
