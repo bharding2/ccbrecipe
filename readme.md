@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/bharding2/ccbrecipe.svg?branch=master)](https://travis-ci.org/bharding2/ccbrecipe)
+[![Coverage Status](https://coveralls.io/repos/github/bharding2/ccbrecipe/badge.svg?branch=master)](https://coveralls.io/github/bharding2/ccbrecipe?branch=master)
 
 # CCB Recipe Portal
 ##### A recipe tracking and storage app
