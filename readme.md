@@ -6,10 +6,15 @@
 ### API Documentation
 #### Routes
 ##### Auth Routes
+###### Signup
+###### Signin
+
 ##### Recipe Routes
+##### User Routes
 
 #### Models
 ##### Recipe Model
+
 ##### User Model
 
 built under the MIT License.
